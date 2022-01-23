@@ -4,7 +4,7 @@ import { Income } from './income';
 
 @Injectable()
 export class IncomesService {
-  constructor(private readonly incomesRepository: IncomesRepository) {}
+  constructor(private incomesRepository: IncomesRepository) {}
 
   async create(income: Income): Promise<Income> {
     return this.incomesRepository.upsert(income);
