@@ -9,4 +9,8 @@ export class IncomesService {
   async create(income: Income): Promise<Income> {
     return this.incomesRepository.upsert(income);
   }
+
+  async findAll(): Promise<Income[]> {
+    return this.incomesRepository.findAll();
+  }
 }

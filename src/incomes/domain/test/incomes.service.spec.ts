@@ -46,4 +46,24 @@ describe('IncomesService', () => {
       );
     });
   });
+
+  describe('findAll', () => {
+    it('should return incomes', async () => {
+      const income = new Income({
+        description: 'income',
+        value: 100,
+        date: today,
+      });
+
+      incomesRepository.findAll = jest.fn().mockResolvedValue([income]);
+
+      expect(await service.findAll()).toMatchObject([
+        {
+          description: 'income',
+          value: 100,
+          date: today,
+        },
+      ]);
+    });
+  });
 });
