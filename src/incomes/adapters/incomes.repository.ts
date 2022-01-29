@@ -1,4 +1,4 @@
-import { NotImplementedException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { AbstractRepository, EntityRepository } from 'typeorm';
 import { Income } from '../domain/income';
 import { IncomeEntity } from './income.entity';
@@ -18,6 +18,12 @@ export class IncomesRepository extends AbstractRepository<IncomeEntity> {
   }
 
   async findById(id: string): Promise<Income> {
-    throw NotImplementedException;
+    const incomes = await this.repository.findByIds([id]);
+
+    if (incomes.length === 0) {
+      throw new NotFoundException('It was not found an income for given id');
+    }
+
+    return incomes[0].toIncome();
   }
 }

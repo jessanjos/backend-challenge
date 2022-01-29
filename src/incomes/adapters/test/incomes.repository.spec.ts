@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
@@ -94,6 +95,28 @@ describe('IncomeRepository', () => {
           date: today,
         },
       ]);
+    });
+  });
+
+  describe('findById', () => {
+    it('should return existent income with given id', async () => {
+      const existentIncome = await entityManager.save(
+        new IncomeEntity('Income 1', 1.5, today),
+      );
+
+      const result = await repository.findById(existentIncome.id);
+      expect(result).toBeInstanceOf(Income);
+
+      expect(result.id).toBe(existentIncome.id);
+      expect(result.description).toEqual('Income 1');
+      expect(result.value).toEqual('1.50');
+      expect(result.date).toEqual(today);
+    });
+
+    it('should thrown NotFoundException when there is no income for given id', async () => {
+      await expect(repository.findById('nonExistentIncomeId')).rejects.toThrow(
+        new NotFoundException(`It was not found an income for given id`),
+      );
     });
   });
 });
