@@ -1,6 +1,7 @@
 import { Income } from '../domain/income';
 
 export class IncomeDto {
+  // TODO: add validations for fields
   id: string;
   description: string;
   value: number;
