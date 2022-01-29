@@ -1,4 +1,4 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, NotFoundException, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { IncomesService } from '../../domain/incomes.service';
@@ -77,7 +77,7 @@ describe('IncomesController', () => {
   });
 
   describe('GET /incomes/{id}', () => {
-    it('should return all income', () => {
+    it('should return income with given id', () => {
       IncomesServiceMock.prototype.findById.mockResolvedValue({
         id: 'incomeId',
         description: 'Target',
@@ -93,6 +93,16 @@ describe('IncomesController', () => {
           expect(result.body.description).toEqual('Target');
           expect(result.body.value).toEqual(11.9);
           expect(result.body.date).toEqual(today.toISOString());
+        });
+    });
+
+    it('should return 404 when was not found an income with id', () => {
+      IncomesServiceMock.prototype.findById.mockRejectedValue(new NotFoundException('There is no income with given id'));
+
+      return request(app.getHttpServer())
+        .get('/incomes/incomeId')
+        .then((result) => {
+          expect(result.status).toEqual(404);
         });
     });
   });
