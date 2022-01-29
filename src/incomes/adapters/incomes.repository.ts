@@ -7,4 +7,12 @@ export class IncomesRepository extends AbstractRepository<IncomeEntity> {
   async upsert(income: Income): Promise<Income> {
     return (await this.repository.save(IncomeEntity.from(income))).toIncome();
   }
+
+  async findAll(): Promise<Income[]> {
+    return (
+      await this.repository.find({
+        order: { createdAt: 'ASC' },
+      })
+    ).map((entity) => entity.toIncome());
+  }
 }
