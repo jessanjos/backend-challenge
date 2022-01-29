@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { IncomesService } from '../domain/incomes.service';
 import { IncomeDto } from './income.dto';
 
@@ -16,5 +16,11 @@ export class IncomesController {
   async findAllIncomes() {
     const incomes = await this.incomesService.findAll();
     return { incomes: incomes.map((income) => IncomeDto.from(income)) };
+  }
+
+  @Get(':id')
+  async findIncomeById(@Param('id') id: string) {
+    const income = await this.incomesService.findById(id);
+    return IncomeDto.from(income);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { IncomesRepository } from '../adapters/incomes.repository';
 import { Income } from './income';
 
@@ -12,5 +12,9 @@ export class IncomesService {
 
   async findAll(): Promise<Income[]> {
     return this.incomesRepository.findAll();
+  }
+
+  async findById(id: string): Promise<Income>{
+    throw NotImplementedException;
   }
 }

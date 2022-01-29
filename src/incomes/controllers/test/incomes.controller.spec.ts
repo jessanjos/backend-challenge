@@ -28,6 +28,7 @@ describe('IncomesController', () => {
   describe('POST /incomes', () => {
     it('should return created income', () => {
       IncomesServiceMock.prototype.create.mockResolvedValue({
+        id: 'incomeId',
         description: 'Target',
         value: 11.9,
         date: today,
@@ -44,6 +45,7 @@ describe('IncomesController', () => {
         .send(givenBody)
         .then((result) => {
           expect(result.status).toEqual(201);
+          expect(result.body.id).toEqual('incomeId');
           expect(result.body.description).toEqual('Target');
           expect(result.body.value).toEqual(11.9);
           expect(result.body.date).toEqual(today.toISOString());
@@ -55,6 +57,7 @@ describe('IncomesController', () => {
     it('should return all income', () => {
       IncomesServiceMock.prototype.findAll.mockResolvedValue([
         {
+          id: 'incomeId',
           description: 'Target',
           value: 11.9,
           date: today,
@@ -65,9 +68,31 @@ describe('IncomesController', () => {
         .get('/incomes')
         .then((result) => {
           expect(result.status).toEqual(200);
+          expect(result.body.incomes[0].id).toEqual('incomeId');
           expect(result.body.incomes[0].description).toEqual('Target');
           expect(result.body.incomes[0].value).toEqual(11.9);
           expect(result.body.incomes[0].date).toEqual(today.toISOString());
+        });
+    });
+  });
+
+  describe('GET /incomes/{id}', () => {
+    it('should return all income', () => {
+      IncomesServiceMock.prototype.findById.mockResolvedValue({
+        id: 'incomeId',
+        description: 'Target',
+        value: 11.9,
+        date: today,
+      });
+
+      return request(app.getHttpServer())
+        .get('/incomes/incomeId')
+        .then((result) => {
+          expect(result.status).toEqual(200);
+          expect(result.body.id).toEqual('incomeId');
+          expect(result.body.description).toEqual('Target');
+          expect(result.body.value).toEqual(11.9);
+          expect(result.body.date).toEqual(today.toISOString());
         });
     });
   });

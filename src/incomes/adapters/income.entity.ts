@@ -45,6 +45,7 @@ export class IncomeEntity {
 
   toIncome() {
     return new Income({
+      id: this.id,
       description: this.description,
       value: this.value,
       date: this.date,
