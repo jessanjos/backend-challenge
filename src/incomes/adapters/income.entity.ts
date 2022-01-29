@@ -1,22 +1,24 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   Index,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
+import { Income } from '../domain/income';
 
 @Entity('incomes')
 @Index(['description', 'date'], { unique: true })
 export class IncomeEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column()
   description: string;
 
-  @Column()
+  @Column('decimal', { precision: 6, scale: 2 })
   value: number;
 
   @Column('datetime', { precision: 6 })
@@ -27,4 +29,25 @@ export class IncomeEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
+
+  constructor(description: string, value: number, date: Date) {
+    this.description = description;
+    this.value = value;
+    this.date = date;
+  }
+
+  static from(income: Income) {
+    return new IncomeEntity(income.description, income.value, income.date);
+  }
+
+  toIncome() {
+    return new Income({
+      description: this.description,
+      value: this.value,
+      date: this.date,
+    });
+  }
 }

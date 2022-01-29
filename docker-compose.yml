@@ -2,7 +2,13 @@ services:
   db:
     container_name: mysql_db
     image: mysql:8.0.20
+    volumes:
+      - alura-challenge-data:/var/lib/mysql
+      - ./scripts/01-init-local-databases.sql:/docker-entrypoint-initdb.d/01-init-local-databases.sql
     ports:
       - '3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD: root
+
+volumes:
+  alura-challenge-data:
