@@ -15,6 +15,6 @@ export class IncomesService {
   }
 
   async findById(id: string): Promise<Income>{
-    throw NotImplementedException;
+    return this.incomesRepository.findById(id);
   }
 }

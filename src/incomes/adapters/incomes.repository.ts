@@ -1,3 +1,4 @@
+import { NotImplementedException } from '@nestjs/common';
 import { AbstractRepository, EntityRepository } from 'typeorm';
 import { Income } from '../domain/income';
 import { IncomeEntity } from './income.entity';
@@ -14,5 +15,9 @@ export class IncomesRepository extends AbstractRepository<IncomeEntity> {
         order: { createdAt: 'ASC' },
       })
     ).map((entity) => entity.toIncome());
+  }
+
+  async findById(id: string): Promise<Income> {
+    throw NotImplementedException;
   }
 }
