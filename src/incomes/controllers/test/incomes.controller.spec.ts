@@ -50,4 +50,25 @@ describe('IncomesController', () => {
         });
     });
   });
+
+  describe('GET /incomes', () => {
+    it('should return all income', () => {
+      IncomesServiceMock.prototype.findAll.mockResolvedValue([
+        {
+          description: 'Target',
+          value: 11.9,
+          date: today,
+        },
+      ]);
+
+      return request(app.getHttpServer())
+        .get('/incomes')
+        .then((result) => {
+          expect(result.status).toEqual(200);
+          expect(result.body.incomes[0].description).toEqual('Target');
+          expect(result.body.incomes[0].value).toEqual(11.9);
+          expect(result.body.incomes[0].date).toEqual(today.toISOString());
+        });
+    });
+  });
 });
