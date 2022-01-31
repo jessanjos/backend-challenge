@@ -1,6 +1,11 @@
-import { INestApplication, NotFoundException, ValidationPipe } from '@nestjs/common';
+import {
+  INestApplication,
+  NotFoundException,
+  ValidationPipe
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+import BusinessException from '../../../exceptions/business.exception';
 import { IncomesService } from '../../domain/incomes.service';
 import { IncomesController } from '../incomes.controller';
 
@@ -51,6 +56,31 @@ describe('IncomesController', () => {
           expect(result.body.date).toEqual(today.toISOString());
         });
     });
+
+    it('should return unprocessable entity when it is a duplicated income', () => {
+      IncomesServiceMock.prototype.create.mockRejectedValue(
+        new BusinessException(
+          `An income with description Target and 2022-01-20 already exists`,
+        ),
+      );
+
+      const givenBody = {
+        description: 'Target',
+        value: 11.9,
+        date: today,
+      };
+
+      return request(app.getHttpServer())
+        .post('/incomes')
+        .send(givenBody)
+        .then((result) => {
+          expect(result.status).toEqual(422);
+          expect(result.body.message).toEqual(
+            `An income with description Target and 2022-01-20 already exists`,
+          );
+          expect(result.body.error).toEqual('Unprocessable Entity');
+        });
+    });
   });
 
   describe('GET /incomes', () => {
@@ -97,7 +127,9 @@ describe('IncomesController', () => {
     });
 
     it('should return 404 when was not found an income with id', () => {
-      IncomesServiceMock.prototype.findById.mockRejectedValue(new NotFoundException('There is no income with given id'));
+      IncomesServiceMock.prototype.findById.mockRejectedValue(
+        new NotFoundException('There is no income with given id'),
+      );
 
       return request(app.getHttpServer())
         .get('/incomes/incomeId')

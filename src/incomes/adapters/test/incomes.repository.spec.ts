@@ -2,6 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
+import BusinessException from '../../../exceptions/business.exception';
 import { Income } from '../../domain/income';
 import { IncomeEntity } from '../income.entity';
 import { IncomesRepository } from '../incomes.repository';
@@ -67,6 +68,20 @@ describe('IncomeRepository', () => {
       expect(persistedIncome[0].createdAt).not.toBeNull();
       expect(persistedIncome[0].updatedAt).not.toBeNull();
       expect(persistedIncome[0].deletedAt).toBeNull();
+    });
+
+    it('should throw exception when there is duplicated entires', async () => {
+      const income = new Income({
+        description: 'Target',
+        value: 11.9,
+        date: today,
+      });
+
+      await repository.upsert(income);
+
+      await expect(repository.upsert(income)).rejects.toThrow(
+        new BusinessException(`An income with description ${income.description} and ${income.date} already exists`),
+      );
     });
   });
 
