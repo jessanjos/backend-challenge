@@ -1,4 +1,4 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IncomesRepository } from '../adapters/incomes.repository';
 import { Income } from './income';
 
@@ -14,7 +14,17 @@ export class IncomesService {
     return this.incomesRepository.findAll();
   }
 
-  async findById(id: string): Promise<Income>{
+  async findById(id: string): Promise<Income> {
     return this.incomesRepository.findById(id);
+  }
+
+  async update(updatedIncome: Income) {
+    const existentIncome = await this.incomesRepository.findById(
+      updatedIncome.id,
+    );
+
+    return this.incomesRepository.upsert(
+      existentIncome.updateBasedOnIncome(updatedIncome),
+    );
   }
 }

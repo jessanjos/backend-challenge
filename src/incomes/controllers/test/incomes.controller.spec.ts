@@ -6,6 +6,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import BusinessException from '../../../exceptions/business.exception';
+import { Income } from '../../domain/income';
 import { IncomesService } from '../../domain/incomes.service';
 import { IncomesController } from '../incomes.controller';
 
@@ -32,12 +33,14 @@ describe('IncomesController', () => {
 
   describe('POST /incomes', () => {
     it('should return created income', () => {
-      IncomesServiceMock.prototype.create.mockResolvedValue({
-        id: 'incomeId',
-        description: 'Target',
-        value: 11.9,
-        date: today,
-      });
+      IncomesServiceMock.prototype.create.mockResolvedValue(
+        new Income({
+          id: 'incomeId',
+          description: 'Target',
+          value: 11.9,
+          date: today,
+        }),
+      );
 
       const givenBody = {
         description: 'Target',
@@ -86,12 +89,12 @@ describe('IncomesController', () => {
   describe('GET /incomes', () => {
     it('should return all income', () => {
       IncomesServiceMock.prototype.findAll.mockResolvedValue([
-        {
+        new Income({
           id: 'incomeId',
           description: 'Target',
           value: 11.9,
           date: today,
-        },
+        }),
       ]);
 
       return request(app.getHttpServer())
@@ -108,12 +111,14 @@ describe('IncomesController', () => {
 
   describe('GET /incomes/{id}', () => {
     it('should return income with given id', () => {
-      IncomesServiceMock.prototype.findById.mockResolvedValue({
-        id: 'incomeId',
-        description: 'Target',
-        value: 11.9,
-        date: today,
-      });
+      IncomesServiceMock.prototype.findById.mockResolvedValue(
+        new Income({
+          id: 'incomeId',
+          description: 'Target',
+          value: 11.9,
+          date: today,
+        }),
+      );
 
       return request(app.getHttpServer())
         .get('/incomes/incomeId')
