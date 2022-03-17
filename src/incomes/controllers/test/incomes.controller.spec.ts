@@ -1,7 +1,7 @@
 import {
   INestApplication,
   NotFoundException,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -140,6 +140,59 @@ describe('IncomesController', () => {
         .get('/incomes/incomeId')
         .then((result) => {
           expect(result.status).toEqual(404);
+        });
+    });
+  });
+
+  describe('PUT /incomes/{id}', () => {
+    it('should return updated income', () => {
+      IncomesServiceMock.prototype.update.mockResolvedValue(
+        new Income({
+          id: 'incomeId',
+          description: 'Target',
+          value: 11.9,
+          date: today,
+        }),
+      );
+
+      const givenBody = {
+        description: 'Target',
+        value: 11.9,
+        date: today,
+      };
+
+      return request(app.getHttpServer())
+        .put('/incomes/incomeId')
+        .send(givenBody)
+        .then((result) => {
+          expect(result.status).toEqual(200);
+          expect(result.body.id).toEqual('incomeId');
+          expect(result.body.description).toEqual('Target');
+          expect(result.body.value).toEqual(11.9);
+          expect(result.body.date).toEqual(today.toISOString());
+        });
+    });
+
+    it('should return unprocessable entity when some error happens on udate', () => {
+      IncomesServiceMock.prototype.update.mockRejectedValue(
+        new BusinessException(`Income with given id does not exist`),
+      );
+
+      const givenBody = {
+        description: 'Target',
+        value: 11.9,
+        date: today,
+      };
+
+      return request(app.getHttpServer())
+        .put('/incomes/unexistentIncomeId')
+        .send(givenBody)
+        .then((result) => {
+          expect(result.status).toEqual(422);
+          expect(result.body.message).toEqual(
+            `Income with given id does not exist`,
+          );
+          expect(result.body.error).toEqual('Unprocessable Entity');
         });
     });
   });

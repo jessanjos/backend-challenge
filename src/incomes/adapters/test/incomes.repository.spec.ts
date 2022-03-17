@@ -80,7 +80,9 @@ describe('IncomeRepository', () => {
       await repository.upsert(income);
 
       await expect(repository.upsert(income)).rejects.toThrow(
-        new BusinessException(`An income with description ${income.description} and ${income.date} already exists`),
+        new BusinessException(
+          `An income with description ${income.description} and ${income.date} already exists`,
+        ),
       );
     });
   });
